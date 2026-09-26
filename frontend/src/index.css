@@ -1,0 +1,96 @@
+@import '@fontsource/space-grotesk/500.css';
+@import '@fontsource/space-grotesk/700.css';
+@import '@fontsource/ibm-plex-sans/400.css';
+@import '@fontsource/ibm-plex-sans/500.css';
+@import '@fontsource/ibm-plex-sans/600.css';
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #0E1116;
+  --color-surface: #171B22;
+  --color-surface2: #1D222B;
+  --color-border: #262B34;
+  --color-trust: #2DD4BF;
+  --color-risk: #F5A623;
+  --color-connection: #8B5CF6;
+  --color-danger: #F87171;
+  --font-display: 'Space Grotesk', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  font-family: var(--font-body);
+}
+
+html {
+  font-size: 17px;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.55;
+}
+
+button {
+  font-family: inherit;
+  
+}
+button:not(:disabled) { 
+  cursor: pointer;
+
+}
+button:disabled { 
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid var(--color-trust);
+  outline-offset: 2px;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes driftSlow {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(30px, -20px) scale(1.08); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 0.7; }
+}
+
+.animate-fadeSlideUp {
+  animation: fadeSlideUp 0.6s ease forwards;
+}
+
+.animate-driftSlow {
+  animation: driftSlow 10s ease-in-out infinite;
+}
+
+.animate-driftSlower {
+  animation: driftSlow 14s ease-in-out infinite;
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
