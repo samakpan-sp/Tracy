@@ -87,10 +87,7 @@ function normalizeAnalysis(parsed) {
   };
 }
 
-// Honest degraded result used ONLY when the AI provider's own safety
-// system blocks analysis of the submitted content. This is not a bug
-// being papered over — it's a real, disclosed limitation the user
-// deserves to see, rather than a dead-end generic error.
+
 function buildSafetyBlockFallback() {
   return normalizeAnalysis({
     verified_facts: [],
