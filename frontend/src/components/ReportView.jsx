@@ -1,4 +1,5 @@
 import jsPDF from 'jspdf';
+import Disclaimer from './Disclaimer';
 
 const ACCENT_CLASSES = {
   trust: { border: 'border-l-trust', dot: 'bg-trust' },
@@ -106,7 +107,7 @@ function ReportView({ report, onNewInvestigation }) {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-1">
+      <div className="flex flex-wrap justify-between items-center gap-2 mb-1">
         <h2 className="font-display text-xl font-semibold m-0">Investigation Report</h2>
         <button
           className="bg-surface2 border border-border text-gray-100 text-sm font-medium px-4 py-2 rounded-lg hover:bg-border/60 transition"
@@ -201,6 +202,9 @@ function ReportView({ report, onNewInvestigation }) {
       >
         Start New Investigation
       </button>
+
+      <Disclaimer />
+
     </div>
   );
 }

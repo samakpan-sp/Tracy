@@ -5,6 +5,7 @@ import healthRouter from './routes/health.js';
 import protectedRouter from './routes/protected.js';
 import investigationsRouter from './routes/investigations.js';
 import evidenceUploadRouter from './routes/evidenceUpload.js';
+import helmet from 'helmet';
 
 dotenv.config();
 
@@ -14,11 +15,13 @@ const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || 'http://localhost:5174'; 
 
 app.use(cors({ origin: FRONTEND_ORIGIN }));
 app.use(express.json());
+app.use(helmet());
 
 app.use('/api/health', healthRouter);
 app.use('/api/protected-ping', protectedRouter);
 app.use('/api/investigations', investigationsRouter);
 app.use('/api/evidence-upload', evidenceUploadRouter);
+
 
 app.listen(PORT, () => {
   console.log(`TRACY backend running on http://localhost:${PORT}`);
