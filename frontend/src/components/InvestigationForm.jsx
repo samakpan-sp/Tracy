@@ -22,16 +22,13 @@ const LEGEND = [
   { color: 'bg-danger', title: 'Risk Indicators', desc: 'Patterns, not proof' },
 ];
 
-function Panel({ title, hint, children, icon, required }) {
+function Panel({ title, hint, children, icon }) {
   return (
     <div className="bg-surface border border-border rounded-xl p-5 mb-5">
       {title && (
         <div className="flex items-start gap-2 mb-1">
           {icon}
-          <h3 className="font-display text-[15px] font-semibold m-0">
-            {title}
-            {required && <span className="text-danger ml-1" aria-hidden="true">*</span>}
-          </h3>
+          <h3 className="font-display text-[15px] font-semibold m-0">{title}</h3>
         </div>
       )}
       {hint && <p className="text-xs text-gray-500 mb-4">{hint}</p>}
@@ -46,10 +43,10 @@ function InvestigationForm({ onReportReceived }) {
   const [subjectPlatform, setSubjectPlatform] = useState(null);
   const [evidence, setEvidence] = useState([]);
   const [userContext, setUserContext] = useState('');
+  const [contextOpen, setContextOpen] = useState(false);
   const [subjectClaims, setSubjectClaims] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 
   const subjectPlaceholder = {
     url: 'https://example.com',
@@ -58,28 +55,12 @@ function InvestigationForm({ onReportReceived }) {
     phone_number: '+234...',
   }[subjectType];
 
-  const validate = () => {
-    const errors = {};
-    if (subjectType === 'social_profile' && !subjectPlatform) {
-      errors.subjectPlatform = 'Please select which platform this profile is on.';
-    }
-    if (!userContext.trim()) {
-      errors.userContext = 'Add what you already know — TRACY needs this to check for contradictions.';
-    }
-    if (subjectClaims.length === 0) {
-      errors.subjectClaims = 'Add at least one claim TRACY should verify against the evidence.';
-    }
-    return errors;
-  };
-
-  const fieldErrors = attemptedSubmit ? validate() : {};
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-    setAttemptedSubmit(true);
 
-    if (Object.keys(validate()).length > 0) {
+    if (subjectType === 'social_profile' && !subjectPlatform) {
+      setError('Please select which platform this profile is on.');
       return;
     }
 
@@ -157,9 +138,6 @@ function InvestigationForm({ onReportReceived }) {
                     </button>
                   ))}
                 </div>
-                {fieldErrors.subjectPlatform && (
-                  <p className="text-xs text-danger mt-2">{fieldErrors.subjectPlatform}</p>
-                )}
               </div>
             )}
           </Panel>
@@ -186,62 +164,43 @@ function InvestigationForm({ onReportReceived }) {
               <li>Add sender details (phone, email, username) as separate evidence if visible</li>
             </ul>
           </div>
-
-          {error && <p className="text-sm text-danger mb-3">{error}</p>}
-
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-2 bg-trust text-[#06231F] font-medium
-                    py-3.5 rounded-lg hover:brightness-110 transition disabled:opacity-60"
-        >
-          {loading ? (
-            <>
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <GearIcon />
-              Begin Investigation
-            </>
-          )}
-        </button>
         </div>
 
         <aside>
-          <Panel
-            title="Your Context"
-            required
-            icon={<InfoIcon className="text-gray-500 mt-0.5" />}
-            hint="What do you know about this? Your context helps TRACY identify contradictions."
-          >
-            <textarea
-              className={`w-full bg-bg border rounded-lg px-3.5 py-2.5 text-sm
-                         placeholder-gray-600 focus:outline-none focus:border-trust transition resize-y
-                         ${fieldErrors.userContext ? 'border-danger' : 'border-border'}`}
-              value={userContext}
-              onChange={(e) => setUserContext(e.target.value)}
-              rows={4}
-              placeholder="e.g. I received this from a number claiming to be my bank..."
-              aria-required="true"
-              aria-invalid={!!fieldErrors.userContext}
-            />
-            {fieldErrors.userContext && (
-              <p className="text-xs text-danger mt-1.5">{fieldErrors.userContext}</p>
+          <div className="bg-surface border border-border rounded-xl p-5 mb-5">
+            <button
+              type="button"
+              onClick={() => setContextOpen(!contextOpen)}
+              className="w-full flex items-start justify-between gap-2 text-left"
+            >
+              <div className="flex items-start gap-2">
+                <InfoIcon className="text-gray-500 mt-0.5 shrink-0" />
+                <div>
+                  <h3 className="font-display text-[15px] font-semibold m-0">Your Context</h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Optional — add what you know to help TRACY catch contradictions
+                  </p>
+                </div>
+              </div>
+              <span className="text-gray-500 text-lg leading-none shrink-0 mt-0.5">
+                {contextOpen ? '–' : '+'}
+              </span>
+            </button>
+
+            {contextOpen && (
+              <textarea
+                className="w-full bg-bg border border-border rounded-lg px-3.5 py-2.5 text-sm mt-4
+                           placeholder-gray-600 focus:outline-none focus:border-trust transition resize-y"
+                value={userContext}
+                onChange={(e) => setUserContext(e.target.value)}
+                rows={4}
+                placeholder="e.g. I received this from a number claiming to be my bank..."
+              />
             )}
-          </Panel>
+          </div>
 
           <Panel>
-            <SubjectClaimsInput
-              claims={subjectClaims}
-              setClaims={setSubjectClaims}
-              required
-              error={fieldErrors.subjectClaims}
-            />
+            <SubjectClaimsInput claims={subjectClaims} setClaims={setSubjectClaims} />
           </Panel>
 
           <Panel title="Report will include">
@@ -259,6 +218,30 @@ function InvestigationForm({ onReportReceived }) {
           </Panel>
         </aside>
       </div>
+
+      {error && <p className="text-sm text-danger mt-4">{error}</p>}
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="w-full flex items-center justify-center gap-2 bg-trust text-[#06231F] font-medium
+                   py-3.5 rounded-lg mt-5 hover:brightness-110 transition disabled:opacity-60"
+      >
+        {loading ? (
+          <>
+            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            Analyzing...
+          </>
+        ) : (
+          <>
+            <GearIcon />
+            Begin Investigation
+          </>
+        )}
+      </button>
     </form>
   );
 }
